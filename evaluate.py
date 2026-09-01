@@ -43,7 +43,7 @@ def validate_sintel(args, model):
     for dstype in ['clean', 'final']:
         val_dataset = datasets.MpiSintel(split='training', dstype=dstype, root=args.paths['sintel'])
         val_loader = data.DataLoader(val_dataset, batch_size=4, 
-            pin_memory=False, shuffle=False, num_workers=16, drop_last=False)
+            pin_memory=False, shuffle=False, num_workers=4, drop_last=False)
         epe_list = np.array([], dtype=np.float32)
         px1_list = np.array([], dtype=np.float32)
         px3_list = np.array([], dtype=np.float32)
@@ -73,7 +73,7 @@ def validate_kitti(args, model):
     """ Peform validation using the KITTI-2015 (train) split """
     val_dataset = datasets.KITTI(split='training', root=args.paths['kitti'])
     val_loader = data.DataLoader(val_dataset, batch_size=1, 
-        pin_memory=False, shuffle=False, num_workers=16, drop_last=False)
+        pin_memory=False, shuffle=False, num_workers=4, drop_last=False)
     epe_list = np.array([], dtype=np.float32)
     num_valid_pixels = 0
     out_valid_pixels = 0
@@ -99,7 +99,7 @@ def validate_spring(args, model):
     """ Peform validation using the Spring (val) split """
     val_dataset = datasets.SpringFlowDataset(split='train', root=args.paths['spring'])
     val_loader = data.DataLoader(val_dataset, batch_size=1, 
-        pin_memory=False, shuffle=False, num_workers=8, drop_last=False)
+        pin_memory=False, shuffle=False, num_workers=4, drop_last=False)
     
     epe_list = np.array([], dtype=np.float32)
     px1_list = np.array([], dtype=np.float32)

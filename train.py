@@ -39,11 +39,13 @@ def train(args, rank=0, world_size=1, use_ddp=False):
     if args.restore_ckpt is not None:
         load_ckpt(model, args.restore_ckpt)
         print(f"restore ckpt from {args.restore_ckpt}")
-    model = torch.nn.DataParallel(model)
+    if use_ddp:
+        model = torch.nn.DataParallel(model)
     model.cuda()
 
     if not os.path.exists(args.savedir):
-        os.makedirs(args.savedir)
+        os.makedirs(args.savedir, exist_ok=True)
+    os.makedirs('checkpoints', exist_ok=True)
 
     with open('%s/command.txt'%args.savedir, 'w') as f:
         f.write(' '.join(sys.argv))
@@ -52,7 +54,7 @@ def train(args, rank=0, world_size=1, use_ddp=False):
         f.write('\n\n')
 
     model.train()
-    train_loader = fetch_dataloader(args, rank=rank, world_size=world_size, use_ddp=False)
+    train_loader = fetch_dataloader(args, rank=rank, world_size=world_size, use_ddp=use_ddp)
     optimizer, scheduler = fetch_optimizer(args, model)
     total_steps = 0
     VAL_FREQ = 10000
@@ -61,9 +63,14 @@ def train(args, rank=0, world_size=1, use_ddp=False):
 
     while should_keep_training:
         epoch += 1
+        if use_ddp:
+            train_loader.sampler.set_epoch(epoch)
         for i_batch, data_blob in enumerate(tqdm.tqdm(train_loader)):
             optimizer.zero_grad()
-            image1, image2, flow, valid = [x.to(f'cuda:{model.device_ids[0]}') for x in data_blob] 
+            if use_ddp:
+                image1, image2, flow, valid = [x.to(f'cuda:{model.device_ids[0]}') for x in data_blob] 
+            else:
+                image1, image2, flow, valid = [x.to(device_id) for x in data_blob]
             output = model(image1, image2, flow_gt=flow, iters=args.iters)
             loss = sequence_loss(output, flow, valid, args.gamma)
             loss.backward()
@@ -71,9 +78,14 @@ def train(args, rank=0, world_size=1, use_ddp=False):
             optimizer.step()
             scheduler.step()
 
+            if total_steps % 100 == 0:
+                print(f"Step {total_steps}/{args.num_steps} | Loss: {loss.item():.4f}")
+
             if total_steps % VAL_FREQ == VAL_FREQ - 1 and rank == 0:
                 PATH = '%s/%d_%s.pth' % (args.savedir, total_steps+1, args.name)
-                torch.save(model.module.state_dict(), PATH)
+                state_dict = model.module.state_dict() if use_ddp else model.state_dict()
+                os.makedirs('checkpoints', exist_ok=True)
+                torch.save(state_dict, PATH)
             
             if total_steps > args.num_steps:
                 should_keep_training = False
@@ -83,7 +95,9 @@ def train(args, rank=0, world_size=1, use_ddp=False):
 
     PATH = '%s/%s.pth' % (args.savedir, args.name)
     if rank == 0:
-        torch.save(model.module.state_dict(), PATH)
+        state_dict = model.module.state_dict() if use_ddp else model.state_dict()
+        os.makedirs('checkpoints', exist_ok=True)
+        torch.save(state_dict, PATH)
 
     return PATH
 

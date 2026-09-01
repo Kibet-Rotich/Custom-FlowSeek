@@ -592,7 +592,7 @@ def fetch_dataloader(args, rank=0, world_size=1, use_ddp=False):
         train_dataset = 20 * sintel_clean + 20 * sintel_final + 80 * kitti + 30 * hd1k + things
 
     train_loader = data.DataLoader(train_dataset, batch_size=args.batch_size, 
-        pin_memory=False, shuffle=True, num_workers=8, drop_last=True, worker_init_fn=seed_worker, generator=g)
+        pin_memory=False, shuffle=True, num_workers=4, drop_last=True, worker_init_fn=seed_worker, generator=g)
 
     print('Training with %d image pairs' % len(train_dataset))
     return train_loader
