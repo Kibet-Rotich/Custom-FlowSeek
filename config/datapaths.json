@@ -1,13 +1,13 @@
 {
     "paths": 
     {
-        "tartanair": "data/Tartanair/",
-        "chairs": "data/FlyingChairs/data",
-        "things": "data/FlyingThings3D/",
-        "sintel": "data/MPI-Sintel/",
-        "kitti": "data/KITTI/2015/",
-        "hd1k": "data/HD1K/",
-        "spring": "data/spring/",
-        "layeredflow": "data/public_layeredflow_benchmark"
+        "tartanair": "/mnt/c/Users/jeffc/Desktop/Computer Vision/data/Tartanair/",
+        "chairs": "/mnt/c/Users/jeffc/Desktop/Computer Vision/data/FlyingChairs_release/data",
+        "things": "/mnt/c/Users/jeffc/Desktop/Computer Vision/data/FlyingThings3D/",
+        "sintel": "/mnt/c/Users/jeffc/Desktop/Computer Vision/data/MPI-Sintel/",
+        "kitti": "/mnt/c/Users/jeffc/Desktop/Computer Vision/data/KITTI/2015/",
+        "hd1k": "/mnt/c/Users/jeffc/Desktop/Computer Vision/data/HD1K/",
+        "spring": "/mnt/c/Users/jeffc/Desktop/Computer Vision/data/spring/",
+        "layeredflow": "/mnt/c/Users/jeffc/Desktop/Computer Vision/data/public_layeredflow_benchmark"
     }
 }
