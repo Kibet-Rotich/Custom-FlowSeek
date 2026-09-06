@@ -2,6 +2,7 @@
     "name": "flowseek_M_TartanC",
     "dataset": "chairs",
     "gpus": [0],
+    "restore_ckpt": "checkpoints/2000_flowseek_M_TartanC.pth",
 
     "use_var": true,
     "var_min": 0,

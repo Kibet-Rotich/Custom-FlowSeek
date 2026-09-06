@@ -56,7 +56,7 @@ def train(args, rank=0, world_size=1, use_ddp=False):
     model.train()
     train_loader = fetch_dataloader(args, rank=rank, world_size=world_size, use_ddp=use_ddp)
     optimizer, scheduler = fetch_optimizer(args, model)
-    total_steps = 0
+    total_steps = getattr(args, 'start_step', 0)
     VAL_FREQ = 1000
     epoch = 0
     should_keep_training = True
@@ -112,6 +112,7 @@ if __name__ == '__main__':
     parser.add_argument('--restore_ckpt', help='restore previews weights', default=None)
 
     parser.add_argument('--savedir', help='enable Depth Anything v2', type=str)
+    parser.add_argument('--start_step', help='global start step count', type=int, default=0)
     parser.add_argument('--seed', help='set random seed', type=float, default=0)
     args = parse_args(parser)
 
