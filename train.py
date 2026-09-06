@@ -57,7 +57,7 @@ def train(args, rank=0, world_size=1, use_ddp=False):
     train_loader = fetch_dataloader(args, rank=rank, world_size=world_size, use_ddp=use_ddp)
     optimizer, scheduler = fetch_optimizer(args, model)
     total_steps = 0
-    VAL_FREQ = 10000
+    VAL_FREQ = 1000
     epoch = 0
     should_keep_training = True
 
